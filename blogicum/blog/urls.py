@@ -11,4 +11,15 @@ urlpatterns = [
         views.category_posts,
         name='category_posts'
     ),
+    path('auth/registration/', views.UserRegistrationView.as_view(), 
+         name='registration'),
+    
+    # Профиль пользователя
+    path('profile/<str:username>/', views.UserProfileView.as_view(), 
+         name='profile'),
+    
+    # Редактирование профиля
+    path('profile/<str:username>/edit/', views.UserEditView.as_view(), 
+         name='profile_edit'),
 ]
+
