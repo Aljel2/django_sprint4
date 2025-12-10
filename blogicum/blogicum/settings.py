@@ -24,14 +24,10 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-evahzu3abuz-5jjn+gl5sk304skzho+%13gymq2j-hp1^*2iz8'
 
 # SECURITY WARNING: don't run with debug turned on in production!
-DEBUG = False
+DEBUG = True
 
-ALLOWED_HOSTS = [
-    'localhost',
-    '127.0.0.1',
-]
+ALLOWED_HOSTS = []
 
-CSRF_FAILURE_VIEW = 'blogicum.views.csrf_failure' 
 
 # Application definition
 
