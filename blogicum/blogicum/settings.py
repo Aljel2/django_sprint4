@@ -31,7 +31,7 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
-CSRF_FAILURE_VIEW = 'blog.views.csrf_failure'
+CSRF_FAILURE_VIEW = 'blogicum.views.csrf_failure'
 
 # Application definition
 

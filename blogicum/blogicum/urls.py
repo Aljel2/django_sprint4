@@ -25,8 +25,8 @@ urlpatterns = [
     path('auth/registration/', include('users.urls')),
 ]
 
-handler404 = 'blog.views.page_not_found'
-handler500 = 'blog.views.server_error'
+handler404 = 'blogicum.views.page_not_found'
+handler500 = 'blogicum.views.server_error'
 
 if settings.DEBUG:
     import debug_toolbar
