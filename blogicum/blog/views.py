@@ -64,3 +64,16 @@ def category_posts(request, category_slug):
     }
 
     return render(request, 'blog/category.html', context)
+
+def page_not_found(request, exception):
+    # Переменная exception содержит отладочную информацию, 
+    # мы ее не используем в шаблоне, но она обязательна для обработчика 404
+    return render(request, 'pages/404.html', status=404)
+
+def csrf_failure(request, reason=''):
+    # Обработчик ошибки 403 CSRF
+    return render(request, 'pages/403csrf.html', status=403)
+
+def server_error(request):
+    # Обработчик ошибки 500
+    return render(request, 'pages/500.html', status=500)

@@ -21,7 +21,12 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('blog.urls', namespace='blog')),
     path('pages/', include('pages.urls', namespace='pages')),
+    path('auth/', include('django.contrib.auth.urls')),
+    path('auth/registration/', include('users.urls')),
 ]
+
+handler404 = 'blog.views.page_not_found'
+handler500 = 'blog.views.server_error'
 
 if settings.DEBUG:
     import debug_toolbar
