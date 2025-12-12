@@ -1,5 +1,7 @@
 from django.shortcuts import render, redirect, get_object_or_404
-from django.views.generic import CreateView, UpdateView, ListView, DetailView
+from django.views.generic import (
+    CreateView, UpdateView, ListView, DetailView, DeleteView
+)
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.http import Http404
@@ -84,9 +86,8 @@ class PostCreateView(LoginRequiredMixin, CreateView):
         return super().form_valid(form)
     
     def get_success_url(self):
-        """Перенаправление на профиль пользователя после создания"""
-        return reverse_lazy('profile', kwargs={'username': self.request.user.username})
-    
+        """Перенаправление на отредактированный пост"""
+        return reverse_lazy('blog:post_detail', kwargs={'id': self.object.id})
 
 class PostEditView(LoginRequiredMixin, UpdateView):
     """Редактирование публикации"""
@@ -106,7 +107,7 @@ class PostEditView(LoginRequiredMixin, UpdateView):
     
     def get_success_url(self):
         """Перенаправление на отредактированный пост"""
-        return reverse_lazy('post_detail', kwargs={'post_id': self.object.id})
+        return reverse_lazy('blog:post_detail', kwargs={'post_id': self.object.id})
 
 
 class PostListView(ListView):
@@ -125,7 +126,17 @@ class PostListView(ListView):
         ).order_by('-pub_date')
         return posts
 
-
+class PostDeleteView(LoginRequiredMixin, DeleteView):
+    model = Post
+    login_url = 'login'
+    
+    def form_valid(self, form):
+        form.instance.author = self.request.user
+        return super().form_valid(form)
+    
+    def get_success_url(self):
+        return reverse_lazy('blog', kwargs={'id': self.object.id})
+    
 class PostDetailView(DetailView):
     """Просмотр конкретной публикации"""
     model = Post

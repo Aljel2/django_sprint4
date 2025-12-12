@@ -33,5 +33,5 @@ class PostForm(forms.ModelForm):
     def clean_pub_date(self):
         """Валидация даты публикации"""
         pub_date = self.cleaned_data.get('pub_date')
-        # Дата может быть в прошлом или будущем
+        # Дата может быть в прошлом или будущем - оба варианта валидны
         return pub_date
