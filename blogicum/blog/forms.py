@@ -1,5 +1,5 @@
 from django import forms
-from .models import Post
+from .models import Post, Comment
 
 
 class PostForm(forms.ModelForm):
@@ -35,3 +35,16 @@ class PostForm(forms.ModelForm):
         pub_date = self.cleaned_data.get('pub_date')
         # Дата может быть в прошлом или будущем - оба варианта валидны
         return pub_date
+
+class CommentForm(forms.ModelForm):
+    
+    class Meta:
+        model = Comment
+        fields = ('text',)
+        widgets = {
+            'text': forms.Textarea(attrs={
+                'class': 'form-control',
+                'placeholder': 'Содержание комментария',
+                'rows': 10
+            }),
+        }

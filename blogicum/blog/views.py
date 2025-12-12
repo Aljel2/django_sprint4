@@ -2,13 +2,12 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.views.generic import (
     CreateView, UpdateView, ListView, DetailView, DeleteView
 )
-from django.contrib.auth.mixins import LoginRequiredMixin
+from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.http import Http404
 from django.utils import timezone
-from .models import Post, Category, Location
-from .forms import PostForm
-from .models import Post, Category
+from .forms import PostForm, CommentForm
+from .models import Post, Category, Comment
 
 
 def index(request):
@@ -130,12 +129,19 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
     login_url = 'login'
     
-    def form_valid(self, form):
-        form.instance.author = self.request.user
-        return super().form_valid(form)
+    def get_object(self, queryset=None):
+        """Получить пост и проверить, что это автор"""
+        post = super().get_object(queryset)
+        
+        # Проверяем, что это автор поста
+        if post.author != self.request.user:
+            raise Http404("Вы не можете удалить чужой пост")
+        
+        return post
     
     def get_success_url(self):
-        return reverse_lazy('blog', kwargs={'id': self.object.id})
+        """Перенаправление на профиль пользователя после удаления"""
+        return reverse_lazy('blog:profile', kwargs={'username': self.request.user.username})
     
 class PostDetailView(DetailView):
     """Просмотр конкретной публикации"""
