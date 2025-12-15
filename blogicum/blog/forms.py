@@ -4,12 +4,10 @@ from .models import Post, Comment
 
 User = get_user_model()
 
-class PostForm(forms.ModelForm):
-    """Форма для создания и редактирования публикации"""
-    
+class PostForm(forms.ModelForm):    
     class Meta:
         model = Post
-        fields = ('title', 'text', 'pub_date', 'category', 'location')
+        fields = ('title', 'text', 'pub_date', 'category', 'location', 'image')
         widgets = {
             'title': forms.TextInput(attrs={
                 'class': 'form-control',
@@ -33,9 +31,7 @@ class PostForm(forms.ModelForm):
         }
     
     def clean_pub_date(self):
-        """Валидация даты публикации"""
         pub_date = self.cleaned_data.get('pub_date')
-        # Дата может быть в прошлом или будущем - оба варианта валидны
         return pub_date
 
 class CommentForm(forms.ModelForm):

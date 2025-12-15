@@ -26,7 +26,6 @@ class ProfileDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         user = self.object
 
-        # все посты пользователя (для владельца) / только опубликованные для остальных
         posts = user.posts.select_related(
             'author', 'category', 'location'
         ).order_by('-pub_date')
@@ -38,7 +37,6 @@ class ProfileDetailView(DetailView):
         posts = Paginator(posts, 10).get_page(self.request.GET.get('page'))
 
         context['page_obj'] = posts
-        # флаг: просматривает ли профиль его владелец
         context['is_owner'] = self.request.user.is_authenticated and self.request.user == user
         return context
     

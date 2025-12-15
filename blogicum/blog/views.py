@@ -1,4 +1,4 @@
-from django.shortcuts import render, get_object_or_404
+from django.shortcuts import get_object_or_404
 from django.views.generic import (
     CreateView, UpdateView, ListView, DetailView, DeleteView
 )
@@ -6,8 +6,8 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.urls import reverse_lazy
 from django.utils import timezone
 from .forms import PostForm, CommentForm
-from .models import Post, Category, Comment, User
-from django.db.models import Count, Q
+from .models import Post, Category, Comment
+from django.db.models import Count
 
 
 class CategoryPostsView(ListView):
@@ -69,11 +69,11 @@ class PostEditView(LoginRequiredMixin, UpdateView):
     model = Post
     form_class = PostForm
     template_name = 'blog/create.html'
+    pk_url_kwarg = 'post_id'
 
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
-    #template_name = 'include/post_card.html'
     template_name = 'blog/create.html'
     success_url = reverse_lazy('blog:index')
     pk_url_kwarg = 'post_id'
@@ -95,9 +95,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     form_class = CommentForm
 
     def form_valid(self, form):
-        # Автор комментария — текущий пользователь
         form.instance.author = self.request.user
-        # Пост берём из параметра URL (подставь своё имя параметра!)
         form.instance.post = get_object_or_404(
             Post,
             pk=self.kwargs["post_id"],
