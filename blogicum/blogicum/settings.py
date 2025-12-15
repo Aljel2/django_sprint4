@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     '127.0.0.1',
 ]
 
+LOGIN_REDIRECT_URL = 'blog:index'
+
 CSRF_FAILURE_VIEW = 'blogicum.views.csrf_failure'
 
 # Application definition

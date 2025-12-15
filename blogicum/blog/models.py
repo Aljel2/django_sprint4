@@ -80,6 +80,9 @@ class Post(models.Model):
     class Meta:
         verbose_name = 'публикация'
         verbose_name_plural = 'Публикации'
+
+    def get_absolute_url(self):
+        return reverse('blog:profile', kwargs={'username': self.author.username}) 
     
     def __str__(self):
         return self.title
@@ -87,7 +90,7 @@ class Post(models.Model):
 class Comment(models.Model):
     text = models.TextField('Текст комментария')
     post = models.ForeignKey(
-        Post, 
+        Post,
         on_delete=models.CASCADE,
         related_name='comments',
     )

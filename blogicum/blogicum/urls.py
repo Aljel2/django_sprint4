@@ -21,8 +21,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('blog.urls', namespace='blog')),
     path('pages/', include('pages.urls', namespace='pages')),
+    path('', include('users.urls', namespace='users')),
     path('auth/', include('django.contrib.auth.urls')),
-    path('auth/registration/', include('users.urls')),
 ]
 
 handler404 = 'blogicum.views.page_not_found'

@@ -21,14 +21,4 @@ urlpatterns = [
     path('posts/<int:post_id>/edit/', views.PostEditView.as_view(), name='edit_post'),
     
     path('posts/<int:post_id>/delete/', views.PostDeleteView.as_view(), name='delete_post'),
-
-    path('profile/<str:username>/', views.UserProfileView.as_view(), name='profile'),
-
-    path('posts/<int:post_id>/comment/', views.CommentCreateView.as_view(), name='add_comment'),
-    
-    # Редактирование комментария
-    path('posts/<int:post_id>/edit_comment/<int:comment_id>/', views.CommentEditView.as_view(), name='edit_comment'),
-    
-    # Удаление комментария
-    path('posts/<int:post_id>/delete_comment/<int:comment_id>/', views.CommentDeleteView.as_view(), name='delete_comment'),
 ]
