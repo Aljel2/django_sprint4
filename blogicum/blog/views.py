@@ -46,6 +46,7 @@ class PostListView(ListView):
     template_name = "blog/index.html"
     context_object_name = "posts"
     paginate_by = 10
+
     def get_queryset(self):
         return (
             Post.objects.filter(
@@ -57,7 +58,7 @@ class PostListView(ListView):
             .annotate(comment_count=Count("comments"))
             .order_by("-pub_date")
         )
-    
+
     def get_queryset(self):
         return (
             Post.objects.filter(
@@ -104,11 +105,11 @@ class PostDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
         context["form"] = CommentForm()
-        context["comments"] = self.object.comments.select_related(
-            "author"
-        ).order_by("created_at")
+        context["comments"] = self.object.comments.select_related("author").order_by(
+            "created_at"
+        )
         return context
-    
+
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment

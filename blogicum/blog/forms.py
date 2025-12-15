@@ -8,7 +8,15 @@ User = get_user_model()
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ("title", "text", "pub_date", "category", "location", "image")
+        fields = (
+            "title",
+            "text",
+            "pub_date",
+            "category",
+            "location",
+            "is_published",
+            "image",
+        )
         widgets = {
             "title": forms.TextInput(
                 attrs={"class": "form-control", "placeholder": "Заголовок публикации"}
@@ -51,3 +59,33 @@ class UserEditForm(forms.ModelForm):
     class Meta:
         model = User
         fields = ("first_name", "last_name", "username", "email")
+        widgets = {
+            "first_name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Введите ваше имя",
+                    "maxlength": "30",
+                }
+            ),
+            "last_name": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Введите вашу фамилию",
+                    "maxlength": "150",
+                }
+            ),
+            "username": forms.TextInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Введите имя пользователя",
+                    "maxlength": "150",
+                }
+            ),
+            "email": forms.EmailInput(
+                attrs={
+                    "class": "form-control",
+                    "placeholder": "Введите электронную почту",
+                    "type": "email",
+                }
+            ),
+        }
