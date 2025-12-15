@@ -46,7 +46,6 @@ class PostListView(ListView):
     template_name = "blog/index.html"
     context_object_name = "posts"
     paginate_by = 10
-
     def get_queryset(self):
         return (
             Post.objects.filter(
@@ -55,6 +54,19 @@ class PostListView(ListView):
                 category__is_published=True,
             )
             .select_related("category", "author")
+            .annotate(comment_count=Count("comments"))
+            .order_by("-pub_date")
+        )
+    
+    def get_queryset(self):
+        return (
+            Post.objects.filter(
+                is_published=True,
+                pub_date__lte=timezone.now(),
+                category__is_published=True,
+            )
+            .select_related("category", "author")
+            .annotate(comment_count=Count("comments"))
             .order_by("-pub_date")
         )
 
@@ -92,8 +104,11 @@ class PostDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         context["user"] = self.request.user
         context["form"] = CommentForm()
+        context["comments"] = self.object.comments.select_related(
+            "author"
+        ).order_by("created_at")
         return context
-
+    
 
 class CommentCreateView(LoginRequiredMixin, CreateView):
     model = Comment
@@ -126,7 +141,7 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
         return context
 
     def get_success_url(self):
-        context = {"post_id": self.object.post.post_id}
+        context = {"post_id": self.object.post.pk}
         return reverse_lazy(
             "blog:post_detail",
             kwargs=context,
@@ -147,7 +162,7 @@ class CommentDeleteView(LoginRequiredMixin, DeleteView):
         return context
 
     def get_success_url(self):
-        context = {"post_id": self.object.post.post_id}
+        context = {"post_id": self.object.post.pk}
         return reverse_lazy(
             "blog:post_detail",
             kwargs=context,
