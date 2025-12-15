@@ -3,6 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 from django.views.generic import (
     CreateView, UpdateView, DetailView
 )
+from django.core.paginator import Paginator
 from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .forms import UserEditForm
@@ -19,6 +20,7 @@ class ProfileDetailView(DetailView):
     context_object_name = 'profile'
     slug_field = 'username'
     slug_url_kwarg = 'username'
+    paginate_by = 10
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)
@@ -32,6 +34,8 @@ class ProfileDetailView(DetailView):
         if self.request.user != user:
             now = timezone.now()
             posts = posts.filter(is_published=True, pub_date__lte=now)
+
+        posts = Paginator(posts, 10).get_page(self.request.GET.get('page'))
 
         context['page_obj'] = posts
         # флаг: просматривает ли профиль его владелец

@@ -82,7 +82,7 @@ class Post(models.Model):
         verbose_name_plural = 'Публикации'
 
     def get_absolute_url(self):
-        return reverse('blog:profile', kwargs={'username': self.author.username}) 
+        return reverse('users:profile', kwargs={'username': self.author.username}) 
     
     def __str__(self):
         return self.title
@@ -101,3 +101,6 @@ class Comment(models.Model):
         verbose_name = 'комментарий'
         verbose_name_plural = 'Комментарии'
         ordering = ('created_at',) 
+
+    def get_absolute_url(self):
+        return reverse('users:profile', kwargs={'username': self.author.username}) 
