@@ -1,4 +1,4 @@
-from django.shortcuts import get_object_or_404
+from django.shortcuts import get_object_or_404, redirect
 from django.views.generic import (
     CreateView,
     UpdateView,
@@ -12,6 +12,7 @@ from django.utils import timezone
 from .forms import PostForm, CommentForm
 from .models import Post, Category, Comment
 from django.db.models import Count
+from django.http import Http404
 
 
 class CategoryPostsView(ListView):
@@ -59,18 +60,6 @@ class PostListView(ListView):
             .order_by("-pub_date")
         )
 
-    def get_queryset(self):
-        return (
-            Post.objects.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__is_published=True,
-            )
-            .select_related("category", "author")
-            .annotate(comment_count=Count("comments"))
-            .order_by("-pub_date")
-        )
-
 
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
@@ -88,6 +77,12 @@ class PostEditView(LoginRequiredMixin, UpdateView):
     template_name = "blog/create.html"
     pk_url_kwarg = "post_id"
 
+    def dispatch(self, request, *args, **kwargs):
+        post = self.get_object()
+        if post.author != request.user:
+            return redirect("blog:post_detail", post_id=post.pk)
+        return super().dispatch(request, *args, **kwargs)
+
 
 class PostDeleteView(LoginRequiredMixin, DeleteView):
     model = Post
@@ -95,11 +90,29 @@ class PostDeleteView(LoginRequiredMixin, DeleteView):
     success_url = reverse_lazy("blog:index")
     pk_url_kwarg = "post_id"
 
+    def dispatch(self, request, *args, **kwargs):
+        post = self.get_object()
+        if post.author != request.user:
+            return redirect("blog:post_detail", post_id=post.pk)
+        return super().dispatch(request, *args, **kwargs)
+
 
 class PostDetailView(DetailView):
     model = Post
     template_name = "blog/detail.html"
     pk_url_kwarg = "post_id"
+
+    def get_object(self, queryset=None):
+        """Получить пост с проверкой доступа."""
+        post = super().get_object(queryset)
+
+        if not post.is_published and self.request.user != post.author:
+            raise Http404("Пост не найден")
+
+        if post.pub_date > timezone.now() and self.request.user != post.author:
+            raise Http404("Пост не найден")
+
+        return post
 
     def get_context_data(self, **kwargs):
         context = super().get_context_data(**kwargs)

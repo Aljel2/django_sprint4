@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+TEMPLATES_DIR = BASE_DIR / "templates"
+
 DEFAULT_FROM_EMAIL = "noreply@example.com"
 
 EMAIL_BACKEND = "django.core.mail.backends.filebased.EmailBackend"
@@ -42,7 +44,7 @@ MEDIA_ROOT = BASE_DIR / "media"
 
 LOGIN_REDIRECT_URL = "blog:index"
 
-CSRF_FAILURE_VIEW = "blogicum.views.csrf_failure"
+CSRF_FAILURE_VIEW = "pages.views.csrf_failure"
 
 # Application definition
 

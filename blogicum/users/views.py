@@ -6,6 +6,7 @@ from django.contrib.auth.mixins import LoginRequiredMixin
 from django.utils import timezone
 from .forms import UserEditForm
 from .models import User
+from django.db.models import Count
 
 
 class Registrarion(CreateView):
@@ -26,8 +27,10 @@ class ProfileDetailView(DetailView):
         context = super().get_context_data(**kwargs)
         user = self.object
 
-        posts = user.posts.select_related("author", "category", "location").order_by(
-            "-pub_date"
+        posts = (
+            user.posts.select_related("author", "category", "location")
+            .annotate(comment_count=Count("comments"))
+            .order_by("-pub_date")
         )
 
         if self.request.user != user:
