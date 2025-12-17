@@ -31,6 +31,8 @@ ALLOWED_HOSTS = [
     "127.0.0.1",
 ]
 
+TIME_ZONE = "Europe/Saratov"
+
 TEMPLATES_DIR = BASE_DIR / "templates"
 
 DEFAULT_FROM_EMAIL = "noreply@example.com"
@@ -128,8 +130,6 @@ AUTH_PASSWORD_VALIDATORS = [
 # https://docs.djangoproject.com/en/3.2/topics/i18n/
 
 LANGUAGE_CODE = "ru-RU"
-
-TIME_ZONE = "Europe/Moscow"
 
 USE_I18N = True
 
