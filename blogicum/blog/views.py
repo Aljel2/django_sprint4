@@ -14,6 +14,22 @@ from .models import Post, Category, Comment
 from django.db.models import Count
 from django.http import Http404
 
+def get_posts(data):
+    return (
+        data.filter(
+            is_published=True,
+            pub_date__lte=timezone.now(),
+            category__is_published=True,
+        )
+    )
+
+def get_comments(data):
+    return (
+        data
+        .select_related("author")
+        .annotate(comment_count=Count("comments"))
+        .order_by("-pub_date")
+    ) 
 
 class CategoryPostsView(ListView):
     model = Post
@@ -26,14 +42,7 @@ class CategoryPostsView(ListView):
             Category, slug=self.kwargs["category_slug"], is_published=True
         )
         return (
-            Post.objects.filter(
-                is_published=True,
-                category=self.category,
-                pub_date__lte=timezone.now(),
-            )
-            .select_related("author")
-            .annotate(comment_count=Count("comments"))
-            .order_by("-pub_date")
+            get_comments(get_posts(Post.objects))
         )
 
     def get_context_data(self, **kwargs):
@@ -50,14 +59,7 @@ class PostListView(ListView):
 
     def get_queryset(self):
         return (
-            Post.objects.filter(
-                is_published=True,
-                pub_date__lte=timezone.now(),
-                category__is_published=True,
-            )
-            .select_related("category", "author")
-            .annotate(comment_count=Count("comments"))
-            .order_by("-pub_date")
+            get_comments(get_posts(Post.objects))
         )
 
 
@@ -103,7 +105,6 @@ class PostDetailView(DetailView):
     pk_url_kwarg = "post_id"
 
     def get_object(self, queryset=None):
-        """Получить пост с проверкой доступа."""
         post = super().get_object(queryset)
 
         if not post.is_published and self.request.user != post.author:
@@ -145,6 +146,7 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
     model = Comment
     form_class = CommentForm
     template_name = "blog/comment.html"
+    pk_url_kwarg = "comment_id"
 
     def get_queryset(self):
         return Comment.objects.filter(author=self.request.user)
@@ -165,6 +167,7 @@ class CommentUpdateView(LoginRequiredMixin, UpdateView):
 class CommentDeleteView(LoginRequiredMixin, DeleteView):
     model = Comment
     template_name = "blog/comment.html"
+    pk_url_kwarg = "comment_id"
 
     def get_queryset(self):
         return Comment.objects.filter(author=self.request.user)

@@ -7,7 +7,7 @@ from django.utils import timezone
 from .forms import UserEditForm
 from .models import User
 from django.db.models import Count
-
+from blog.views import get_comments
 
 class Registrarion(CreateView):
     form_class = UserCreationForm
@@ -28,9 +28,7 @@ class ProfileDetailView(DetailView):
         user = self.object
 
         posts = (
-            user.posts.select_related("author", "category", "location")
-            .annotate(comment_count=Count("comments"))
-            .order_by("-pub_date")
+            get_comments(user.posts)
         )
 
         if self.request.user != user:
