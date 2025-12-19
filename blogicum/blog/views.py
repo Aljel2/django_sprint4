@@ -42,7 +42,7 @@ class CategoryPostsView(ListView):
             Category, slug=self.kwargs["category_slug"], is_published=True
         )
         return (
-            get_comments(get_posts(Post.objects))
+            get_comments(get_posts(Post.objects.filter(category=self.category)))
         )
 
     def get_context_data(self, **kwargs):
